@@ -1,0 +1,121 @@
+/*
+    "mini librairie" armgba :
+    ARMGBA.H
+
+      armgba.h    : En-tête C (à inclure dans le projet C)
+      armgba.c    : Les sous programmes en C
+      asmarmgba.s : Les sous programmes en assembleur
+      incarmgba.s : En-tête assembleur (à inclure dans les fichiers assembleur)
+*/
+
+
+#ifndef ARMGBA_H
+#define ARMGBA_H
+
+
+//    ******** TYPEDEFS USUELS ********
+
+typedef unsigned char      u8;
+typedef unsigned short int u16;
+typedef unsigned int       u32;
+typedef signed char        s8;
+typedef signed short int   s16;
+typedef signed int         s32;
+
+
+//    ******** CONSTANTES ET ADRESSES UTILES GBA ********
+
+//      Géométrie écran
+#define SCREENW        240          // Largeur écran : nombre de pixels
+#define SCREENH        160          // Hauteur écran : nombre de pixels
+#define SCREENLINE     480          // Nombre d'octets dans une ligne écran (mode 3)
+
+//      RAM vidéo
+#define VRAM        0x06000000      // Origine de la RAM vidéo
+#define VRAMLIMIT   0x06018000      // Première adresse après la RAM vidéo
+
+//      "Registres" d'entrées sorties pour piloter le matériel
+#define REG_DISPCNT  *(volatile u16 *)0x04000000    // Mode graphique
+#define REG_VCOUNT   *(volatile u16 *)0x04000006    // Compteur de Balayage vertical
+#define REG_KEYINPUT *(volatile u16 *)0x04000130	// Lecture d'état des touches
+
+ 	                                // Masques 16 bit pour lecture des touches
+	                                //  Touche GBA      Touche VBA (clavier PC azerty)
+#define KEY_A    		0x0001		//  A               W
+#define KEY_B    		0x0002		//  B               X
+#define KEY_SELECT	    0x0004		//  Select          Backspace (au dessus de "Entrée")
+#define KEY_START		0x0008		//  Start           "Entrée"
+#define KEY_RIGHT		0x0010		//  Right           flèche droite
+#define KEY_LEFT		0x0020		//  Left            flèche gauche
+#define KEY_UP		    0x0040		//  Up              flèche haut
+#define KEY_DOWN		0x0080		//  Down            flèche bas
+#define KEY_SRIGHT	    0x0100		//  Shoulder Right  S
+#define KEY_SLEFT		0x0200		//  Shoulder Left   Q
+
+
+//    ******** VARIABLES GLOBALES ********
+
+// Par défaut la variable traceConsole est à 1 -> les fonctions trace sont actives
+// Pour désactiver les fonctions trace il suffit de mettre traceConsole à 0
+extern volatile int traceConsole;
+
+
+//    ******** PROTOTYPES DES PROCEDURES EN C ********
+
+//  Initialisation du mode graphique 3 (utilisé dans tous les exercices et pour le projet)
+void setMode3();
+
+//  Initialisation du mode graphique 4 (pour aventureux, mode palette avec contraintes...)
+void setMode4();
+
+//  Colorie un pixel (mode 3 seulement) Attention : Pas de contrôle de coordonnées
+void drawPixel(u32 x, u32 y, u16 color);
+
+//  Attente de rafraîchissement écran ( affichage effectif du contenu de la RAM vidéo )
+void vSync();
+
+//  Pour accéder aux informations affichées avec les fonctions trace :
+//  dans le simulateur VBA ouvrir le menu Tools -> Logging...
+
+//  La chaîne dont l'adresse est passée en argument est affichée (\n pour retour ligne)
+void traceStr(char *s);
+
+//  La valeur 32 bits passée en argument est affichée en hexadécimal. Retour ligne auto.
+void traceHex32(u32 u);
+
+//  La chaîne s puis la valeur héxa de u sont affichées. Retour ligne auto.
+void traceStrHex32(char *s,u32 u);
+
+//  Affichage des Codes Conditions NZCV avec le CPSR passé en argument. Retour ligne auto.
+//  Utiliser TRACECC dans le code assembleur (appel automatique à traceCC)
+void traceCC(u32 u);
+
+
+//    ******** PROTOTYPES DES PROCEDURES EN ASSEMBLEUR ********
+
+//  Calcul d'une couleur BGR 15 bits ( mode graphique 3 )
+//  les arguments sont attendus sur l'intervalle  [0:255]
+u16  asmMakeColor (u8 r, u8 g, u8 b);
+
+//  Colorier un pixel avec une couleur ( mode graphique 3 )
+//  Attention : Pas de contrôle de coordonnées
+void asmDrawPixel (u32 x, u32 y, u16 color);
+
+//  Colorier un pixel avec une couleur ( mode graphique 3 )
+//  Implémentation courte avec moins d'instructions
+//  Attention : Pas de contrôle de coordonnées
+void asmDrawPixel_fast (u32 x, u32 y, u16 color);
+
+//  Dessine un carré rempli ( mode graphique 3 )
+//  x,y coordonnées du pixel supérieur gauche, size coté du carré (en nombre de pixels)
+//  Attention : Pas de contrôle de coordonnées ou de la taille
+void asmDrawBlock (u32 x, u32 y, u32 size, u16 color);
+
+int asmDrawShip(int x, int y);
+int asmTir(int x, int y);
+
+void asmDrawRect(u16 * dest, u16 color, int w, int h);
+
+#endif /* FIN ARMGBA_H */
+
+

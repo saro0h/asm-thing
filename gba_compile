@@ -1,0 +1,10 @@
+#!/bin/sh
+
+/usr/bin/gcc -c main.c -mthumb-interwork -mthumb -g -O2 -Wall -fno-strict-aliasing -o main.o
+/usr/bin/gcc -c armgba.c -mthumb-interwork -mthumb -g -O2 -Wall -fno-strict-aliasing -o armgba.o
+/usr/bin/gcc -c asm.s -mthumb-interwork -mthumb -g -O2 -Wall -fno-strict-aliasing -o asm.o
+/usr/bin/gcc -c asmarmgba.s -mthumb-interwork -mthumb -g -O2 -Wall -fno-strict-aliasing -o asmarmgba.o
+/usr/bin/gcc main.o armgba.o asm.o asmarmgba.o -mthumb-interwork -mthumb -g -specs=gba_mb.specs -o projet.mb.elf
+/usr/bin/gcc -v -O binary projet.mb.elf projet.mb.gba
+/usr/bin/gcc projet.mb.gba -t projet.mb.gba
+

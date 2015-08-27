@@ -1,0 +1,835 @@
+
+	.INCLUDE "incarmgba.s"
+
+alea: .WORD 0
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ Nom          : asmProc
+@
+@ Action       :    -----
+@
+@ Prototype C  : void asmProc()
+@
+@
+@ Entrées      :    -----
+@ Sortie       :    -----
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+@	.ARM
+@	.SECTION .iwram,"ax",%progbits
+@	.ALIGN
+@	.GLOBAL  asmProc
+@	.TYPE    asmProc, function
+@
+@   asmProc:
+@	push	{r4-r11,lr}
+@
+
+
+    @ DEVELOPPER ICI le code assembleur de la procédure asmProc
+
+@@@@@@@@@@@@@@@@@@@@@@@ SEGMENT DIAGONAL @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@	ldr r2,=0x06000000+2*120+480*80
+@   ldr r3,=0x7FFF
+@    ldr r0,=10 @ Compteur de boucle "répéter 10 fois"
+@    BoucleSeg: @ Etiquette de début de boucle
+@    strh r3,[r2] @ Colorier le pixel courant
+@    add r2,r2,#480 @ Adresse du pixel suivant (déplacement d'un pixel à droite)
+@    add r2,r2,#2 @ pour la diagonale, une étape en plus (add #482 impossible)
+@    subs r0,r0,#1 @ Décrémenter le compteur de boucle et mettre NZCV à jour
+@    bne BoucleSeg
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+@ldr r2,=0x06000000+2*120+480*80 @ Adresse de départ...
+@
+@mov r2, #240
+@mul r2, r1, r2
+@add r2, r2, r0
+@add r2, r2, r2
+@add r2, r2, #0x06000000
+@
+@add r2,r2,#4 @ déplacement de 2 pixels à droite
+@ldr r3,=0x5294 @ couleur grise
+@strh r3,[r2] @ colorier un pixel
+@add r2,r2,#480 @ déplacement d'1 pixel vers le bas
+@ldr r0,=6 @ on va colorier un segment horizontal de 6 pixels
+@
+@BoucleSeg1: @ début de 1ère boucle
+@strh r3,[r2] @ colorier un pixel du segment
+@add r2,r2,#2 @ adresse pixel suivant
+@subs r0,r0,#1 @ décrémenter compteur de boucle...
+@bne BoucleSeg1 @ répéter tant que compteur non nul
+@
+@ldr r3,=0x7FE0 @ couleur cyan (bleu + vert)
+@strh r3,[r2] @ colorier un pixel (cockpit)
+@add r2,r2,#480-16 @ déplacement d'1 pixel vers le bas et de 8 à gauche
+@ldr r3,=0x001F @ couleur rouge
+@strh r3,[r2] @ colorier un pixel (flamme réacteur)
+@add r2,r2,#2 @ déplacement d'1 pixel à droite
+@ldr r3,=0x03FF @ couleur jaune
+@strh r3,[r2] @ colorier un pixel (flamme réacteur)
+@add r2,r2,#2 @ déplacement d'1 pixel à droite
+@ldr r3,=0x5294 @ couleur grise
+@ldr r0,=8 @ on va colorier un segment horizontal de 8 pixels
+@
+@BoucleSeg2: @ début de 2ème boucle (nom d'étiquette différent)
+@strh r3,[r2] @ colorier un pixel du segment
+@add r2,r2,#2 @ adresse pixel suivant
+@subs r0,r0,#1 @ décrémenter compteur de boucle...
+@bne BoucleSeg2 @ répéter tant que compteur non nul
+@
+@
+@	pop		{r4-r11,lr}
+@	bx      lr
+@
+@ ---------------------------------------------------------------------------
+
+
+@.ARM
+@	.SECTION .iwram,"ax",%progbits
+@	.ALIGN
+@	.GLOBAL  asmProcEff
+@	.TYPE    asmProcEff, function
+@
+@
+@asmProcEff:
+@	push	{r4-r11,lr}
+@
+@
+@mov r2, #240
+@mul r2, r1, r2
+@add r2, r2, r0
+@add r2, r2, r2
+@add r2, r2, #0x06000000
+@
+@add r2,r2,#4 @ déplacement de 2 pixels à droite
+@ldr r3,=0x0000 @ couleur grise
+@strh r3,[r2] @ colorier un pixel
+@add r2,r2,#480 @ déplacement d'1 pixel vers le bas
+@ldr r0,=6 @ on va colorier un segment horizontal de 6 pixels
+@
+@BouclSeg1: @ début de 1ère boucle
+@strh r3,[r2] @ colorier un pixel du segment
+@add r2,r2,#2 @ adresse pixel suivant
+@subs r0,r0,#1 @ décrémenter compteur de boucle...
+@bne BouclSeg1 @ répéter tant que compteur non nul
+@
+@ldr r3,=0x7FE0 @ couleur cyan (bleu + vert)
+@strh r3,[r2] @ colorier un pixel (cockpit)
+@add r2,r2,#480-16 @ déplacement d'1 pixel vers le bas et de 8 à gauche
+@ldr r3,=0x001F @ couleur rouge
+@strh r3,[r2] @ colorier un pixel (flamme réacteur)
+@add r2,r2,#2 @ déplacement d'1 pixel à droite
+@ldr r3,=0x03FF @ couleur jaune
+@strh r3,[r2] @ colorier un pixel (flamme réacteur)
+@add r2,r2,#2 @ déplacement d'1 pixel à droite
+@ldr r3,=0x5294 @ couleur grise
+@ldr r0,=8 @ on va colorier un segment horizontal de 8 pixels
+@
+@BouclSeg2: @ début de 2ème boucle (nom d'étiquette différent)
+@strh r3,[r2] @ colorier un pixel du segment
+@add r2,r2,#2 @ adresse pixel suivant
+@subs r0,r0,#1 @ décrémenter compteur de boucle...
+@bne BouclSeg2 @ répéter tant que compteur non nul
+@
+@
+@	pop		{r4-r11,lr}
+@	bx      lr
+@
+@ ---------------------------------------------------------------------------
+
+@
+	.ARM
+	.SECTION .iwram,"ax",%progbits
+	.ALIGN
+	.GLOBAL  asmDrawShip
+	.TYPE    asmDrawShip, function
+
+    asmDrawShip:
+	push	{r4-r11,lr}
+
+
+
+    @ DEVELOPPER ICI le code assembleur de la procédure asmProc
+@
+@@@@@@@@@@@@@@@@@@@@@@@ SEGMENT DIAGONAL @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@	ldr r2,=0x06000000+2*120+480*80
+@   ldr r3,=0x7FFF
+@    ldr r0,=10 @ Compteur de boucle "répéter 10 fois"
+@    BoucleSeg: @ Etiquette de début de boucle
+@    strh r3,[r2] @ Colorier le pixel courant
+@    add r2,r2,#480 @ Adresse du pixel suivant (déplacement d'un pixel à droite)
+@    add r2,r2,#2 @ pour la diagonale, une étape en plus (add #482 impossible)
+@    subs r0,r0,#1 @ Décrémenter le compteur de boucle et mettre NZCV à jour
+@    bne BoucleSeg
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+@ldr r2,=0x06000000+2*120+480*80 @ Adresse de départ...
+
+@Calcul de l'adresse
+mov r5, #0
+
+mov r2, #240
+mul r2, r1, r2
+add r2, r2, r0
+add r2, r2, r2
+add r2, r2, #0x06000000
+
+add r2,r2,#14 @ déplacement de 7 pixels à droite
+ldr r3,=0x001F @ verte
+ldr r0,=4 @ on va colorier un segment horizontal de 4 pixels
+
+@ 1ère ligne verte
+BoucleSeg1o: @ début de 1ère boucle
+ldrh r4,[r2]
+orr r5,r5,r4
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg1o @ répéter tant que compteur non nul
+
+add r2,r2,#480
+sub r2,r2,#10
+ldr r0,=6 @ on va colorier un segment horizontal de 6 pixels
+
+@ 2eme ligne verte
+BoucleSeg2o: @ début de 2eme boucle
+ldrh r4,[r2]
+orr r5,r5,r4
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg2o @ répéter tant que compteur non nul
+
+
+
+add r2,r2,#480
+sub r2,r2,#16
+ldr r3,=0x7C00 @ bleu
+ldr r0,=10 @ on va colorier un segment horizontal de 10 pixels
+
+@ 3eme ligne bleu
+BoucleSeg3o: @ début de 2eme boucle
+ldrh r4,[r2]
+orr r5,r5,r4
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg3o @ répéter tant que compteur non nul
+
+add r2,r2,#480-20
+ldr r0,=10 @ on va colorier un segment horizontal de 10 pixels
+
+@ 4eme ligne bleu
+BoucleSeg4o: @ début de 2eme boucle
+ldrh r4,[r2]
+orr r5,r5,r4
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg4o @ répéter tant que compteur non nul
+
+
+add r2,r2,#480-24
+ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+
+@ 5eme ligne bleu/vert
+
+BoucleSeg5o: @ début de 2eme boucle
+ldrh r4,[r2]
+orr r5,r5,r4
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg5o @ répéter tant que compteur non nul
+
+ldr r3,=0x03E0  @ vert
+ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+
+BoucleSeg6o: @ début de 2eme boucle
+ldrh r4,[r2]
+orr r5,r5,r4
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg6o @ répéter tant que compteur non nul
+
+ldr r3,=0x7C00 @ bleu
+ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+
+BoucleSeg7o: @ début de 2eme boucle
+ldrh r4,[r2]
+orr r5,r5,r4
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg7o @ répéter tant que compteur non nul
+
+ldr r3,=0x03E0  @ vert
+ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+
+BoucleSeg8o: @ début de 2eme boucle
+ldrh r4,[r2]
+orr r5,r5,r4
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg8o @ répéter tant que compteur non nul
+
+ldr r3,=0x7C00 @ bleu
+ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+
+BoucleSeg9o: @ début de 2eme boucle
+ldrh r4,[r2]
+orr r5,r5,r4
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg9o @ répéter tant que compteur non nul
+
+ldr r3,=0x03E0  @ vert
+ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+
+BoucleSeg10o: @ début de 2eme boucle
+ldrh r4,[r2]
+orr r5,r5,r4
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg10o @ répéter tant que compteur non nul
+
+ldr r3,=0x7C00 @ bleu
+ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+
+BoucleSeg11o: @ début de 2eme boucle
+ldrh r4,[r2]
+orr r5,r5,r4
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg11o @ répéter tant que compteur non nul
+
+
+@ 6eme ligne bleu/vert
+
+add r2,r2,#480
+sub r2,r2,#28
+ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+
+BoucleSeg12o: @ début de 2eme boucle
+ldrh r4,[r2]
+orr r5,r5,r4
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg12o @ répéter tant que compteur non nul
+
+ldr r3,=0x03E0  @ vert
+ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+
+BoucleSeg13o: @ début de 2eme boucle
+ldrh r4,[r2]
+orr r5,r5,r4
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg13o @ répéter tant que compteur non nul
+
+ldr r3,=0x7C00 @ bleu
+ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+
+BoucleSeg14o: @ début de 2eme boucle
+ldrh r4,[r2]
+orr r5,r5,r4
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg14o @ répéter tant que compteur non nul
+
+ldr r3,=0x03E0  @ vert
+ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+
+BoucleSeg15o: @ début de 2eme boucle
+ldrh r4,[r2]
+orr r5,r5,r4
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg15o @ répéter tant que compteur non nul
+
+ldr r3,=0x7C00 @ bleu
+ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+
+BoucleSeg16o: @ début de 2eme boucle
+ldrh r4,[r2]
+orr r5,r5,r4
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg16o @ répéter tant que compteur non nul
+
+ldr r3,=0x03E0  @ vert
+ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+
+BoucleSeg17o: @ début de 2eme boucle
+ldrh r4,[r2]
+orr r5,r5,r4
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg17o @ répéter tant que compteur non nul
+
+ldr r3,=0x7C00 @ bleu
+ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+
+BoucleSeg18o: @ début de 2eme boucle
+ldrh r4,[r2]
+orr r5,r5,r4
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg18o @ répéter tant que compteur non nul
+
+
+add r2,r2,#480
+sub r2,r2,#32
+ldr r3,=0x7C00 @ bleu
+ldr r0,=18 @ on va colorier un segment horizontal de 18 pixels
+
+@ 7eme ligne bleu
+BoucleSeg19o: @ début de 2eme boucle
+ldrh r4,[r2]
+orr r5,r5,r4
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg19o @ répéter tant que compteur non nul
+
+add r2,r2,#480
+sub r2,r2,#36
+ldr r0,=18 @ on va colorier un segment horizontal de 18 pixels
+
+@ 7eme ligne bleu
+BoucleSeg20o: @ début de 2eme boucle
+ldrh r4,[r2]
+orr r5,r5,r4
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg20o @ répéter tant que compteur non nul
+
+
+add r2,r2,#480
+sub r2,r2,#34
+ldr r3,=0x001F @ jaune
+ldr r0,=16 @ on va colorier un segment horizontal de 18 pixels
+
+@ 8eme ligne jaune
+BoucleSeg21o: @ début de 2eme boucle
+ldrh r4,[r2]
+orr r5,r5,r4
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg21o @ répéter tant que compteur non nul
+
+mov r0,r5
+@
+
+	pop		{r4-r11,lr}
+	bx      lr
+
+@ ---------------------------------------------------------------------------
+
+
+
+
+@
+	.ARM
+	.SECTION .iwram,"ax",%progbits
+	.ALIGN
+	.GLOBAL  asmDrawShipoff
+	.TYPE    asmDrawShipoff, function
+
+    asmDrawShipoff:
+	push	{r4-r11,lr}
+
+
+
+    @ DEVELOPPER ICI le code assembleur de la procédure asmProc
+@
+@@@@@@@@@@@@@@@@@@@@@@@ SEGMENT DIAGONAL @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@	ldr r2,=0x06000000+2*120+480*80
+@   ldr r3,=0x7FFF
+@    ldr r0,=10 @ Compteur de boucle "répéter 10 fois"
+@    BoucleSeg: @ Etiquette de début de boucle
+@    strh r3,[r2] @ Colorier le pixel courant
+@    add r2,r2,#480 @ Adresse du pixel suivant (déplacement d'un pixel à droite)
+@    add r2,r2,#2 @ pour la diagonale, une étape en plus (add #482 impossible)
+@    subs r0,r0,#1 @ Décrémenter le compteur de boucle et mettre NZCV à jour
+@    bne BoucleSeg
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+@ldr r2,=0x06000000+2*120+480*80 @ Adresse de départ...
+
+@Calcul de l'adresse
+
+mov r2, #240
+mul r2, r1, r2
+add r2, r2, r0
+add r2, r2, r2
+add r2, r2, #0x06000000
+
+add r2,r2,#14 @ déplacement de 7 pixels à droite
+ldr r3,=0x0000 @ noir
+ldr r0,=4 @ on va colorier un segment horizontal de 4 pixels
+
+@ 1ère ligne verte
+BoucleSeg1eff: @ début de 1ère boucle
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg1eff @ répéter tant que compteur non nul
+
+add r2,r2,#480
+sub r2,r2,#10
+ldr r0,=6 @ on va colorier un segment horizontal de 6 pixels
+
+@ 2eme ligne verte
+BoucleSeg2eff: @ début de 2eme boucle
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg2eff @ répéter tant que compteur non nul
+
+
+
+add r2,r2,#480
+sub r2,r2,#16
+ldr r3,=0x0000 @ noir
+ldr r0,=10 @ on va colorier un segment horizontal de 10 pixels
+
+@ 3eme ligne bleu
+BoucleSeg3eff: @ début de 2eme boucle
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg3eff @ répéter tant que compteur non nul
+
+add r2,r2,#480-20
+ldr r0,=10 @ on va colorier un segment horizontal de 10 pixels
+
+@ 4eme ligne bleu
+BoucleSeg4eff: @ début de 2eme boucle
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg4eff @ répéter tant que compteur non nul
+
+
+add r2,r2,#480-24
+ldr r0,=14 @ on va colorier un segment horizontal de 2 pixels
+
+@ 5eme ligne bleu/vert
+
+BoucleSeg5eff: @ début de 2eme boucle
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg5eff @ répéter tant que compteur non nul
+@
+@ldr r3,=0x03E0  @ vert
+@ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+@
+@BoucleSeg6o: @ début de 2eme boucle
+@strh r3,[r2] @ colorier un pixel du segment
+@add r2,r2,#2 @ adresse pixel suivant
+@subs r0,r0,#1 @ décrémenter compteur de boucle...
+@bne BoucleSeg6o @ répéter tant que compteur non nul
+@
+@ldr r3,=0x7C00 @ bleu
+@ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+@
+@BoucleSeg7o: @ début de 2eme boucle
+@strh r3,[r2] @ colorier un pixel du segment
+@add r2,r2,#2 @ adresse pixel suivant
+@subs r0,r0,#1 @ décrémenter compteur de boucle...
+@bne BoucleSeg7o @ répéter tant que compteur non nul
+@
+@ldr r3,=0x03E0  @ vert
+@ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+@
+@BoucleSeg8o: @ début de 2eme boucle
+@strh r3,[r2] @ colorier un pixel du segment
+@add r2,r2,#2 @ adresse pixel suivant
+@subs r0,r0,#1 @ décrémenter compteur de boucle...
+@bne BoucleSeg8o @ répéter tant que compteur non nul
+@
+@ldr r3,=0x7C00 @ bleu
+@ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+@
+@BoucleSeg9o: @ début de 2eme boucle
+@strh r3,[r2] @ colorier un pixel du segment
+@add r2,r2,#2 @ adresse pixel suivant
+@subs r0,r0,#1 @ décrémenter compteur de boucle...
+@bne BoucleSeg9o @ répéter tant que compteur non nul
+@
+@ldr r3,=0x03E0  @ vert
+@ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+@
+@BoucleSeg10o: @ début de 2eme boucle
+@strh r3,[r2] @ colorier un pixel du segment
+@add r2,r2,#2 @ adresse pixel suivant
+@subs r0,r0,#1 @ décrémenter compteur de boucle...
+@bne BoucleSeg10o @ répéter tant que compteur non nul
+@
+@ldr r3,=0x7C00 @ bleu
+@ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+@
+@BoucleSeg11o: @ début de 2eme boucle
+@strh r3,[r2] @ colorier un pixel du segment
+@add r2,r2,#2 @ adresse pixel suivant
+@subs r0,r0,#1 @ décrémenter compteur de boucle...
+@bne BoucleSeg11o @ répéter tant que compteur non nul
+@
+
+@ 6eme ligne bleu/vert
+
+add r2,r2,#480
+sub r2,r2,#28
+ldr r0,=14 @ on va colorier un segment horizontal de 2 pixels
+
+BoucleSeg12eff: @ début de 2eme boucle
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg12eff @ répéter tant que compteur non nul
+
+@ldr r3,=0x03E0  @ vert
+@ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+@
+@BoucleSeg13eff: @ début de 2eme boucle
+@strh r3,[r2] @ colorier un pixel du segment
+@add r2,r2,#2 @ adresse pixel suivant
+@subs r0,r0,#1 @ décrémenter compteur de boucle...
+@bne BoucleSeg13eff @ répéter tant que compteur non nul
+@
+@ldr r3,=0x7C00 @ bleu
+@ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+@
+@BoucleSeg14eff: @ début de 2eme boucle
+@strh r3,[r2] @ colorier un pixel du segment
+@add r2,r2,#2 @ adresse pixel suivant
+@subs r0,r0,#1 @ décrémenter compteur de boucle...
+@bne BoucleSeg14eff @ répéter tant que compteur non nul
+@
+@ldr r3,=0x03E0  @ vert
+@ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+@
+@BoucleSeg15eff: @ début de 2eme boucle
+@strh r3,[r2] @ colorier un pixel du segment
+@add r2,r2,#2 @ adresse pixel suivant
+@subs r0,r0,#1 @ décrémenter compteur de boucle...
+@bne BoucleSeg15eff @ répéter tant que compteur non nul
+@
+@ldr r3,=0x7C00 @ bleu
+@ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+@
+@BoucleSeg16eff: @ début de 2eme boucle
+@strh r3,[r2] @ colorier un pixel du segment
+@add r2,r2,#2 @ adresse pixel suivant
+@subs r0,r0,#1 @ décrémenter compteur de boucle...
+@bne BoucleSeg16eff @ répéter tant que compteur non nul
+@
+@ldr r3,=0x03E0  @ vert
+@ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+@
+@BoucleSeg17eff: @ début de 2eme boucle
+@strh r3,[r2] @ colorier un pixel du segment
+@add r2,r2,#2 @ adresse pixel suivant
+@subs r0,r0,#1 @ décrémenter compteur de boucle...
+@bne BoucleSeg17eff @ répéter tant que compteur non nul
+@
+@ldr r3,=0x7C00 @ bleu
+@ldr r0,=2 @ on va colorier un segment horizontal de 2 pixels
+@
+@BoucleSeg18eff: @ début de 2eme boucle
+@strh r3,[r2] @ colorier un pixel du segment
+@add r2,r2,#2 @ adresse pixel suivant
+@subs r0,r0,#1 @ décrémenter compteur de boucle...
+@bne BoucleSeg18eff @ répéter tant que compteur non nul
+@
+
+add r2,r2,#480
+sub r2,r2,#32
+ldr r3,=0x0000 @ bleu
+ldr r0,=18 @ on va colorier un segment horizontal de 18 pixels
+
+@ 7eme ligne bleu
+BoucleSeg19eff: @ début de 2eme boucle
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg19eff @ répéter tant que compteur non nul
+
+add r2,r2,#480
+sub r2,r2,#36
+ldr r0,=18 @ on va colorier un segment horizontal de 18 pixels
+
+@ 7eme ligne bleu
+BoucleSeg20eff: @ début de 2eme boucle
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg20eff @ répéter tant que compteur non nul
+
+add r2,r2,#480
+sub r2,r2,#34
+ldr r3,=0x0000 @ noir
+ldr r0,=16 @ on va colorier un segment horizontal de 18 pixels
+
+@ 8eme ligne jaune
+BoucleSeg21eff: @ début de 2eme boucle
+strh r3,[r2] @ colorier un pixel du segment
+add r2,r2,#2 @ adresse pixel suivant
+subs r0,r0,#1 @ décrémenter compteur de boucle...
+bne BoucleSeg21eff @ répéter tant que compteur non nul
+
+@
+
+	pop		{r4-r11,lr}
+	bx      lr
+
+@ ---------------------------------------------------------------------------
+
+
+.ARM
+.SECTION .iwram,"ax",%progbits
+.ALIGN
+.GLOBAL  asmRectcpy
+.TYPE    asmRectcpy, function
+
+asmRectcpy:
+    push   {r4,r5}
+    rcBoucleV:          @ Boucle verticale : r3 servira de compteur
+        mov     r4,r2             @ Init boucle horizontale : r4 sert de compteur
+        rcBoucleH:
+       ldrh    r5,[r1]            @ transfert depuis adresse source r1
+       strh    r5,[r0]            @ transfert vers adresse destination r0
+       add     r1,r1,#2           @ src : pixel horizontal suivant (+2 octets)
+       add     r0,r0,#2           @ dest : pixel horizontal suivant (+2 octets)
+       subs    r4,r4,#1           @ décrémenter compteur boucle horizontale
+       bne     rcBoucleH          @ boucler pixel horizontal suivant
+        sub     r1,r1,r2,lsl #1   @ source : Retour en début de segment horizontal
+        add     r1,r1,#SCREENLINE @          Puis ligne en dessous (SCREENLINE=480 voir incarmgba.s)
+        sub     r0,r0,r2,lsl #1   @ dest. : Retour en début de segment horizontal
+        add     r0,r0,#SCREENLINE @          Puis ligne en dessous
+        subs    r3,r3,#1          @ décrémenter compteur boucle verticale
+        bne     rcBoucleV         @ boucler ligne suivante
+    pop    {r4,r5}
+    bx     lr
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@
+@ POUR CHAQUE NOUVELLE PROCEDURE ASSEMBLEUR :
+@
+@ COPIER LE MODELE DE PROCEDURE ci dessus ( asmProc )
+@
+@ DONNER UN NOM et déterminer le prototype C correspondant
+@ AJOUTER LE PROTOTYPE C dans le fichier en-tête projet.h
+@
+@ Modifier le nom et le prototype dans le bloc commentaire qui précède le code assembleur
+@ Modifier le nom dans le code assembleur au niveau de
+@   - La directive    .GLOBAL asmProc              ->      .GLOBAL asmMaProcedure
+@   - La directive    .TYPE asmProc, function      ->      .TYPE asmMaProcedure, function
+@   - L'étiquette   asmProc:                       ->      asmMaProcedure:
+@
+@ CODER entre le   "push ..."  de début de procédure et le   "pop ... / bx lr" de fin
+@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+@@@@@ASMSRAND@@@@@
+
+.ARM
+.SECTION .iwram,"ax",%progbits
+.ALIGN
+.GLOBAL  asmSRand
+.TYPE    asmSRand, function
+
+
+asmSRand:
+    LDR r1,=alea
+    STR r0, [r1]
+    bx     lr
+
+
+@@@@@ASMRAND@@@@@
+
+.ARM
+.SECTION .iwram,"ax",%progbits
+.ALIGN
+.GLOBAL  asmRand
+.TYPE    asmRand, function
+
+
+asmRand:
+    LDR r1,=alea
+    LDR r0, [r1]
+    LDR R3,= 1664525
+    LDR R2,= 1013904223
+    MUL r0, r3, r0
+    ADD r0, r0, r2
+    STR r0, [r1]
+    MOV r0, r0, LSR#16
+    bx     lr
+
+@@@@@ASMDrawRect@@@@@
+
+.ARM
+.SECTION .iwram,"ax",%progbits
+.ALIGN
+.GLOBAL  asmDrawRect
+.TYPE    asmDrawRect, function
+
+
+asmDrawRect:
+    push   {r4}
+    dcBoucleV:          @ Boucle verticale : r3 servira de compteur
+        mov     r4,r2             @ Init boucle horizontale : r4 sert de compteur
+        dcBoucleH:
+       strh    r1,[r0]            @ transfert depuis adresse source r1
+       add     r0,r0,#2           @ src : pixel horizontal suivant (+2 octets)
+       subs    r4,r4,#1           @ décrémenter compteur boucle horizontale
+       bne     dcBoucleH          @ boucler pixel horizontal suivant
+        sub     r0,r0,r2,lsl #1   @ source : Retour en début de segment horizontal
+        add     r0,r0,#SCREENLINE @          Puis ligne en dessous (SCREENLINE=480 voir incarmgba.s)
+        subs    r3,r3,#1          @ décrémenter compteur boucle verticale
+        bne     dcBoucleV         @ boucler ligne suivante
+    pop    {r4}
+    bx     lr
+
+@@@@@ASMDrawRect@@@@@
+
+.ARM
+.SECTION .iwram,"ax",%progbits
+.ALIGN
+.GLOBAL  asmAlea
+.TYPE    asmAlea, function
+
+
+asmAlea:
+
+        mov    r1,r0            @ transfert depuis adresse source r1
+        ldrh   r1, =alea
+        
+       
+    bx     lr
+
+
+
